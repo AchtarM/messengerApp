@@ -9,6 +9,8 @@ export default function ConversationModel( {closeModal} ) {
     const { creatConversations } = useConversations();
     const [selectedContactsId, setselectedContactsId] = useState([]);
 
+    console.log("teeeeeeest",creatConversations);
+
     const handelCheckBoxChange = (contactId) => {
         setselectedContactsId(prevSelectedIds => {
             if(prevSelectedIds.includes(contactId)) {
@@ -24,7 +26,7 @@ export default function ConversationModel( {closeModal} ) {
 
     const handelSubmit = (e) => {
         e.preventDefault();
-        creatConversations(selectedContactsId)
+        creatConversations(selectedContactsId);
         closeModal();
     }
     
