@@ -11,7 +11,7 @@ export function App() {
 
   const dashBoard = (
     <ContactsProvider>
-        <ConversationProvider>
+        <ConversationProvider id = {id}>
           <DashBoard id = {id}/>
         </ConversationProvider>
     </ContactsProvider>

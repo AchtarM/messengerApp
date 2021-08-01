@@ -9,7 +9,7 @@ export  function useConversations() {
     return useContext(ConversationsContext);
 }
 
-export  function ConversationProvider({ children }) {
+export  function ConversationProvider({ id , children }) {
 
     const { contacts } = useContacts();
     const [conversations, setConversations] = UseLocalStorage('Conversations', []);
@@ -20,6 +20,41 @@ export  function ConversationProvider({ children }) {
             return [...prevConversations, { recipients , messages : [] }]
         })
     }
+
+    const addMessageToConversation = ({recipients, text, sender}) => {
+
+        setConversations(prevConversations => {
+            let madeChange =  false;
+            const newMessage = {sender , text};
+            const newConversation = prevConversations.map( conversation => {
+                if(arrayEqulity(conversation.recipients , recipients)) {
+                    madeChange =  true;
+                    return {
+                        ...conversation,
+                        messages : [...conversation.messages, newMessage]
+                    }
+                }
+
+                return conversation;
+            })
+
+            if(madeChange) {
+
+            }
+            else{
+               return [ 
+                   ...prevConversations ,
+                   { recipients , messages : [newMessage] } 
+                ]
+            }
+        })
+    }
+
+    const sendMessage = (recipients , text) => {
+        addMessageToConversation({recipients, text, sender : id})
+    }
+
+    console.log("DebugME: ",conversations);
  
     const formattedConversations = conversations.map((conversation,index) => {
         const recipients = conversation.recipients.map(recipient => {
@@ -32,12 +67,13 @@ export  function ConversationProvider({ children }) {
         })
         const selected = index === selectedConversationsIndex
         return { ...conversation, recipients , selected }
-    })
+    });
     
   
     const value = {
         conversations : formattedConversations,
         selectedConversation : formattedConversations[selectedConversationsIndex],
+        sendMessage,
         selecteConversationsIndex : setSelectedConversationsIndex,
         creatConversations
     }
@@ -49,4 +85,20 @@ export  function ConversationProvider({ children }) {
             {children}
         </ConversationsContext.Provider>
     )
+}
+
+
+function arrayEqulity(a ,b){
+
+    if(a.length !== b.length) {
+        return false;
+    }
+
+    a.sort();
+    b.sort();
+
+    return a.every( (element, index) =>{
+        return (element === b[index])
+    });
+
 }
