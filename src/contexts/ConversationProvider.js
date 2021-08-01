@@ -39,7 +39,7 @@ export  function ConversationProvider({ id , children }) {
             })
 
             if(madeChange) {
-
+                return newConversation;
             }
             else{
                return [ 
@@ -54,7 +54,7 @@ export  function ConversationProvider({ id , children }) {
         addMessageToConversation({recipients, text, sender : id})
     }
 
-    console.log("DebugME: ",conversations);
+  
  
     const formattedConversations = conversations.map((conversation,index) => {
         const recipients = conversation.recipients.map(recipient => {
@@ -64,15 +64,30 @@ export  function ConversationProvider({ id , children }) {
 
             const name = ( contact && contact.name) || recipient;
             return { id : recipient, name }
-        })
+        });
+
+        const messages = conversation.messages.map(message =>{
+            const contact = contacts.find(contact => {
+                return   contact.id === message.sender;
+           });
+           
+       
+           const name = ( contact && contact.name) || message.sender;
+           const fromMe = id === message.sender;
+           return {...message, senderName : name, fromMe  }
+            
+        });
+
+       
         const selected = index === selectedConversationsIndex
-        return { ...conversation, recipients , selected }
+        return { ...conversation, messages, recipients, selected }
     });
     
-  
+
     const value = {
         conversations : formattedConversations,
-        selectedConversation : formattedConversations[selectedConversationsIndex],
+        selectedConversation : formattedConversations
+        [selectedConversationsIndex],
         sendMessage,
         selecteConversationsIndex : setSelectedConversationsIndex,
         creatConversations
